@@ -27,13 +27,8 @@
           <input type="checkbox"
           @click='completeItem(index);'>
             <button
-            title="Ctrl + click to show/hide, click to apply changes.
-(If you want hide & save Ctrl + click will work)" 
-
-            comment='^^!!! Tabulation above made intendly for better display on UI !!!^^
-            --!!! Yes, I know about <!-- -->  !!!--'
-
-            @click='editItem(index)'
+            title="Ctrl + click to show/hide, click to apply changes." 
+            @click.exact='editItem(index)'
             @click.ctrl.exact='showEditItem(index)'>
             edit
           </button>
@@ -53,6 +48,17 @@
              placeholder="Enter text">
             <button @click='addItem'>Add</button>
         </div>
+
+        <div>
+          <ul>
+            <li v-for="(value, index) in items">
+              {{`
+                Current value: ${value.text}
+              `}}
+            </li>
+          </ul>
+        </div>
+        
       </div>
 
       <script>
@@ -61,6 +67,7 @@
 
   data: {
     items:[],
+   // history:[],
     newItemValue:'',
     genetareId:1 
   },
@@ -73,8 +80,11 @@
         this.items.push({
              id: this.genetareId++,
              text: this.newItemValue.trim(),
-             editItemValue: '',
+             editItemValue: this.newItemValue,
              isShowed: false,
+             firstValue: this.newItemValue,
+             createdAt: new Date().toLocaleString(),
+             historyOfChanges:[],
              completed: false
          });
         this.newItemValue = '';
@@ -89,17 +99,25 @@
             return
         }
           this.items[index].text=this.items[index].editItemValue.trim();
+
+          this.items[index].historyOfChanges
+          .push(this.items[index].text);
       },
 
       showEditItem(index){
         this.items[index].isShowed = !this.items[index].isShowed;
-        console.log(this.items[index].isShowed);
       },
 
       completeItem(index){
          this.items[index].completed = !this.items[index].completed;
-         console.log(this.items[index].completed);
-      }
+      },
+
+     /* addToHistory(index){
+        this.items.map((item)=>{
+          return this.history=[...this.items]
+        });
+        console.log(this.history);
+      }*/
   
   }
 })
